@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <style>
+        /* CSS styles */
+        .stopwatch {
+            text-align: center;
+            margin-top: 50px;
+        }
+        #display {
+            font-size: 48px;
+            font-weight: bold;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="stopwatch">
+        <span id="display">00:00:00</span>
+        <button id="startStop" onclick="startStop()">Start</button>
+        <button id="lapReset" onclick="lapReset()">Reset</button>
+        <button id="recordLap" onclick="recordLap()">Lap</button>
+        <ul id="laps"></ul>
+    </div>
+    <script>
+        // JavaScript functionality
+        let startTime;
+        let running = false;
+        let laps = [];
+
+        function startStop() {
+            if (running) {
+                clearInterval(interval);
+                document.getElementById("startStop").textContent = "Start";
+            } else {
+                startTime = new Date().getTime();
+                interval = setInterval(updateDisplay, 10);
+                document.getElementById("startStop").textContent = "Stop";
+            }
+            running = !running;
+        }
+
+        function lapReset() {
+            if (running) {
+                recordLap();
+                return;
+            }
+            clearInterval(interval);
+            running = false;
+            document.getElementById("display").textContent = "00:00:00";
+            document.getElementById("startStop").textContent = "Start";
+            laps = [];
+            document.getElementById("laps").innerHTML = "";
+        }
+
+        function recordLap() {
+            let lapTime = new Date().getTime() - startTime;
+            let formattedLapTime = formatTime(lapTime);
+            laps.push(formattedLapTime);
+            let lapList = document.getElementById("laps");
+            let lapItem = document.createElement("li");
+            lapItem.textContent = "Lap " + laps.length + ": " + formattedLapTime;
+            lapList.prepend(lapItem);
+        }
+
+        function updateDisplay() {
+            let currentTime = new Date().getTime();
+            let elapsedTime = currentTime - startTime;
+            document.getElementById("display").textContent = formatTime(elapsedTime);
+        }
+
+        function formatTime(milliseconds) {
+            let hours = Math.floor(milliseconds / 3600000);
+            let minutes = Math.floor((milliseconds % 3600000) / 60000);
+            let seconds = Math.floor((milliseconds % 60000) / 1000);
+            let centiseconds = Math.floor((milliseconds % 1000) / 10);
+
+            return (
+                (hours < 10 ? "0" : "") + hours + ":" +
+                (minutes < 10 ? "0" : "") + minutes + ":" +
+                (seconds < 10 ? "0" : "") + seconds + "." +
+                (centiseconds < 10 ? "0" : "") + centiseconds
+            );
+        }
+    </script>
+</body>
+</html>
